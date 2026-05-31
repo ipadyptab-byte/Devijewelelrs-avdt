@@ -11,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.maxrave.simpmusic.ui.navigation.destination.home.AIRadioDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.HomeDestination
 import com.maxrave.simpmusic.ui.navigation.destination.library.LibraryDestination
 import com.maxrave.simpmusic.ui.navigation.destination.player.FullscreenDestination
 import com.maxrave.simpmusic.ui.navigation.destination.search.SearchDestination
 import com.maxrave.simpmusic.ui.screen.home.HomeScreen
 import com.maxrave.simpmusic.ui.screen.library.LibraryScreen
+import com.maxrave.simpmusic.ui.screen.other.AIRadioScreen
 import com.maxrave.simpmusic.ui.screen.other.SearchScreen
 import com.maxrave.simpmusic.ui.screen.player.FullscreenPlayer
 
@@ -101,5 +103,13 @@ fun AppNavigationGraph(
                 showNavBar(false)
             },
         )
+        // AI Radio Screen
+        composable<AIRadioDestination> {
+            AIRadioScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }

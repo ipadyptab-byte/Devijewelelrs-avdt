@@ -157,6 +157,31 @@ class SettingsViewModel(
     private val _explicitContentEnabled = MutableStateFlow(false)
     val explicitContentEnabled: StateFlow<Boolean> = _explicitContentEnabled
 
+    // Advertisement settings
+    private val _advertisementEnabled = MutableStateFlow(false)
+    val advertisementEnabled: StateFlow<Boolean> = _advertisementEnabled
+
+    private val _advertisementInterval = MutableStateFlow(300) // Default 5 minutes
+    val advertisementInterval: StateFlow<Int> = _advertisementInterval
+
+    // Prayer alarm settings
+    private val _prayerAlarmEnabled = MutableStateFlow(false)
+    val prayerAlarmEnabled: StateFlow<Boolean> = _prayerAlarmEnabled
+
+    private val _prayerAlarmTime = MutableStateFlow("11:30")
+    val prayerAlarmTime: StateFlow<String> = _prayerAlarmTime
+
+    private val _prayerAlarmFilePath = MutableStateFlow("")
+    val prayerAlarmFilePath: StateFlow<String> = _prayerAlarmFilePath
+
+    // Local property for advertisement track path (not persisted in DataStore)
+    private val _advertisementTrackPath = MutableStateFlow("")
+    val advertisementTrackPath: StateFlow<String> = _advertisementTrackPath
+
+    fun setAdvertisementTrackPath(path: String) {
+        _advertisementTrackPath.value = path
+    }
+
     private val _discordLoggedIn = MutableStateFlow(false)
     val discordLoggedIn: StateFlow<Boolean> = _discordLoggedIn
 
@@ -283,6 +308,11 @@ class SettingsViewModel(
         getAutoBackupFrequency()
         getAutoBackupMaxFiles()
         getAutoBackupLastTime()
+        getAdvertisementEnabled()
+        getAdvertisementInterval()
+        getPrayerAlarmEnabled()
+        getPrayerAlarmTime()
+        getPrayerAlarmFilePath()
         viewModelScope.launch {
             calculateDataFraction(
                 cacheRepository,
@@ -1596,6 +1626,83 @@ data class SettingAlertState(
         // User typing string -> (true or false, If false, show error message)
         val verifyCodeBlock: ((String) -> Pair<Boolean, String?>)? = null,
     )
+
+    // Advertisement settings
+    fun getAdvertisementEnabled() {
+        viewModelScope.launch {
+            dataStoreManager.advertisementEnabled.collect { enabled ->
+                _advertisementEnabled.value = enabled == DataStoreManager.TRUE
+            }
+        }
+    }
+
+    fun setAdvertisementEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setAdvertisementEnabled(enabled)
+            getAdvertisementEnabled()
+        }
+    }
+
+    fun getAdvertisementInterval() {
+        viewModelScope.launch {
+            dataStoreManager.advertisementInterval.collect { interval ->
+                _advertisementInterval.value = interval
+            }
+        }
+    }
+
+    fun setAdvertisementInterval(interval: Int) {
+        viewModelScope.launch {
+            dataStoreManager.setAdvertisementInterval(interval)
+            getAdvertisementInterval()
+        }
+    }
+
+    // Prayer alarm settings
+    fun getPrayerAlarmEnabled() {
+        viewModelScope.launch {
+            dataStoreManager.prayerAlarmEnabled.collect { enabled ->
+                _prayerAlarmEnabled.value = enabled == DataStoreManager.TRUE
+            }
+        }
+    }
+
+    fun setPrayerAlarmEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setPrayerAlarmEnabled(enabled)
+            getPrayerAlarmEnabled()
+        }
+    }
+
+    fun getPrayerAlarmTime() {
+        viewModelScope.launch {
+            dataStoreManager.prayerAlarmTime.collect { time ->
+                _prayerAlarmTime.value = time
+            }
+        }
+    }
+
+    fun setPrayerAlarmTime(time: String) {
+        viewModelScope.launch {
+            dataStoreManager.setPrayerAlarmTime(time)
+            getPrayerAlarmTime()
+        }
+    }
+
+    fun getPrayerAlarmFilePath() {
+        viewModelScope.launch {
+            dataStoreManager.prayerAlarmFilePath.collect { filePath ->
+                _prayerAlarmFilePath.value = filePath
+            }
+        }
+    }
+
+    fun setPrayerAlarmFilePath(filePath: String) {
+        viewModelScope.launch {
+            dataStoreManager.setPrayerAlarmFilePath(filePath)
+            getPrayerAlarmFilePath()
+        }
+    }
 
     data class SelectData(
         // Selected / Data

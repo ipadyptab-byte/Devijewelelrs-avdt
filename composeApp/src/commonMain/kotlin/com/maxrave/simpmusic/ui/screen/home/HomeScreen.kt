@@ -112,6 +112,7 @@ import com.maxrave.simpmusic.ui.component.QuickPicksItem
 import com.maxrave.simpmusic.ui.component.ReviewDialog
 import com.maxrave.simpmusic.ui.component.RippleIconButton
 import com.maxrave.simpmusic.ui.component.ShareSavedLyricsDialog
+import com.maxrave.simpmusic.ui.navigation.destination.home.AIRadioDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.HomeDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.MoodDestination
 import com.maxrave.simpmusic.ui.navigation.destination.home.NotificationDestination
@@ -849,30 +850,13 @@ fun HomeTopAppBar(navController: NavController) {
         title = {
             Column {
                 Text(
-                    text = stringResource(Res.string.app_name),
+                    text = stringResource(Res.string.showroom_welcome),
                     style = typo().titleMedium,
                     color = Color.White,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
-                    text =
-                        when (hour) {
-                            in 6..12 -> {
-                                stringResource(Res.string.good_morning)
-                            }
-
-                            in 13..17 -> {
-                                stringResource(Res.string.good_afternoon)
-                            }
-
-                            in 18..23 -> {
-                                stringResource(Res.string.good_evening)
-                            }
-
-                            else -> {
-                                stringResource(Res.string.good_night)
-                            }
-                        },
+                    text = stringResource(Res.string.audio_only_mode),
                     style = typo().bodySmall,
                 )
             }
@@ -883,6 +867,9 @@ fun HomeTopAppBar(navController: NavController) {
             }
             RippleIconButton(resId = Res.drawable.baseline_history_24) {
                 navController.navigate(RecentlySongsDestination)
+            }
+            RippleIconButton(resId = Res.drawable.baseline_queue_music_24) {
+                navController.navigate(AIRadioDestination)
             }
             RippleIconButton(resId = Res.drawable.baseline_settings_24) {
                 navController.navigate(SettingsDestination)

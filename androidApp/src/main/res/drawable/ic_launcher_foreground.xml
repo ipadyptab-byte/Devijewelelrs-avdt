@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Music Note Icon for Showroom Music System -->
+    <group
+        android:translateX="24"
+        android:translateY="24">
+        <!-- Music Note Head 1 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M20,50 C20,56.63 14.63,62 8,62 C1.37,62 -4,56.63 -4,50 C-4,43.37 1.37,38 8,38 C14.63,38 20,43.37 20,50 Z" />
+        <!-- Music Note Head 2 -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M50,50 C50,56.63 44.63,62 38,62 C31.37,62 26,56.63 26,50 C26,43.37 31.37,38 38,38 C44.63,38 50,43.37 50,50 Z" />
+        <!-- Note Stems -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M18,48 L18,20 L44,14 L44,42 Z" />
+        <!-- Flag -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M44,14 Q56,10 56,22 Q56,34 44,30 L44,14 Z" />
+        <!-- Speaker/Sound Waves (for showroom) -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M0,38 Q-8,50 0,62"
+            android:strokeLineCap="round" />
+    </group>
+</vector>

@@ -56,6 +56,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -395,6 +396,28 @@ fun SettingScreen(
             }
         }
 
+    // Advertisement file picker
+    val advertisementFilePickerLauncher =
+        rememberFilePickerLauncher(
+            type = FilePickerFileType.Audio,
+            selectionMode = FilePickerSelectionMode.Single,
+        ) { file ->
+            file.firstOrNull()?.getPath(pl)?.let { path ->
+                viewModel.setAdvertisementTrackPath(path)
+            }
+        }
+
+    // Prayer audio file picker
+    val prayerFilePickerLauncher =
+        rememberFilePickerLauncher(
+            type = FilePickerFileType.Audio,
+            selectionMode = FilePickerSelectionMode.Single,
+        ) { file ->
+            file.firstOrNull()?.getPath(pl)?.let { path ->
+                viewModel.setPrayerAlarmFilePath(path)
+            }
+        }
+
     // Open equalizer
     val resultLauncher = openEqResult(viewModel.getAudioSessionId())
 
@@ -462,6 +485,16 @@ fun SettingScreen(
     val crossfadeEnabled by viewModel.crossfadeEnabled.collectAsStateWithLifecycle()
     val crossfadeDuration by viewModel.crossfadeDuration.collectAsStateWithLifecycle()
     val crossfadeDjMode by viewModel.crossfadeDjMode.collectAsStateWithLifecycle()
+
+    // Advertisement settings
+    val advertisementEnabled by viewModel.advertisementEnabled.collectAsStateWithLifecycle()
+    val advertisementInterval by viewModel.advertisementInterval.collectAsStateWithLifecycle()
+    val advertisementTrackPath by viewModel.advertisementTrackPath.collectAsStateWithLifecycle()
+
+    // Prayer alarm settings
+    val prayerAlarmEnabled by viewModel.prayerAlarmEnabled.collectAsStateWithLifecycle()
+    val prayerAlarmTime by viewModel.prayerAlarmTime.collectAsStateWithLifecycle()
+    val prayerAlarmFilePath by viewModel.prayerAlarmFilePath.collectAsStateWithLifecycle()
 
     val isCheckingUpdate by sharedViewModel.isCheckingUpdate.collectAsStateWithLifecycle()
 
@@ -672,58 +705,69 @@ fun SettingScreen(
                         )
                     },
                 )
-                SettingItem(
-                    title = stringResource(Res.string.play_video_for_video_track_instead_of_audio_only),
-                    subtitle = stringResource(Res.string.such_as_music_video_lyrics_video_podcasts_and_more),
-                    smallSubtitle = true,
-                    switch = (playVideo to { viewModel.setPlayVideoInsteadOfAudio(it) }),
-                )
-                SettingItem(
-                    title = stringResource(Res.string.video_quality),
-                    subtitle = videoQuality ?: "",
-                    onClick = {
-                        viewModel.setAlertData(
-                            SettingAlertState(
-                                title = runBlocking { getString(Res.string.video_quality) },
-                                selectOne =
-                                    SettingAlertState.SelectData(
-                                        listSelect =
-                                            VIDEO_QUALITY.items.map { item ->
-                                                (item.toString() == videoQuality) to item.toString()
+                // Force audio-only mode for showroom - hide video settings
+                // Video option hidden for audio-only playback system
+                // SettingItem(
+                //     title = stringResource(Res.string.play_video_for_video_track_instead_of_audio_only),
+                //     subtitle = stringResource(Res.string.such_as_music_video_lyrics_video_podcasts_and_more),
+                //     smallSubtitle = true,
+                //     switch = (playVideo to { viewModel.setPlayVideoInsteadOfAudio(it) }),
+                // )
+                // SettingItem(
+                //     title = stringResource(Res.string.video_quality),
+                //     ...
+                // )
+                // Hide video quality and download quality for audio-only mode
+                AnimatedVisibility(visible = false) {
+                    Column {
+                        SettingItem(
+                            title = stringResource(Res.string.video_quality),
+                            subtitle = videoQuality ?: "",
+                            onClick = {
+                                viewModel.setAlertData(
+                                    SettingAlertState(
+                                        title = runBlocking { getString(Res.string.video_quality) },
+                                        selectOne =
+                                            SettingAlertState.SelectData(
+                                                listSelect =
+                                                    VIDEO_QUALITY.items.map { item ->
+                                                        (item.toString() == videoQuality) to item.toString()
+                                                    },
+                                            ),
+                                        confirm =
+                                            runBlocking { getString(Res.string.change) } to { state ->
+                                                viewModel.changeVideoQuality(state.selectOne?.getSelected() ?: "")
                                             },
+                                        dismiss = runBlocking { getString(Res.string.cancel) },
                                     ),
-                                confirm =
-                                    runBlocking { getString(Res.string.change) } to { state ->
-                                        viewModel.changeVideoQuality(state.selectOne?.getSelected() ?: "")
-                                    },
-                                dismiss = runBlocking { getString(Res.string.cancel) },
-                            ),
+                                )
+                            },
                         )
-                    },
-                )
-                SettingItem(
-                    title = stringResource(Res.string.video_download_quality),
-                    subtitle = videoDownloadQuality ?: "",
-                    onClick = {
-                        viewModel.setAlertData(
-                            SettingAlertState(
-                                title = runBlocking { getString(Res.string.video_download_quality) },
-                                selectOne =
-                                    SettingAlertState.SelectData(
-                                        listSelect =
-                                            VIDEO_QUALITY.items.map { item ->
-                                                (item.toString() == videoDownloadQuality) to item.toString()
+                        SettingItem(
+                            title = stringResource(Res.string.video_download_quality),
+                            subtitle = videoDownloadQuality ?: "",
+                            onClick = {
+                                viewModel.setAlertData(
+                                    SettingAlertState(
+                                        title = runBlocking { getString(Res.string.video_download_quality) },
+                                        selectOne =
+                                            SettingAlertState.SelectData(
+                                                listSelect =
+                                                    VIDEO_QUALITY.items.map { item ->
+                                                        (item.toString() == videoDownloadQuality) to item.toString()
+                                                    },
+                                            ),
+                                        confirm =
+                                            runBlocking { getString(Res.string.change) } to { state ->
+                                                viewModel.setVideoDownloadQuality(state.selectOne?.getSelected() ?: "")
                                             },
+                                        dismiss = runBlocking { getString(Res.string.cancel) },
                                     ),
-                                confirm =
-                                    runBlocking { getString(Res.string.change) } to { state ->
-                                        viewModel.setVideoDownloadQuality(state.selectOne?.getSelected() ?: "")
-                                    },
-                                dismiss = runBlocking { getString(Res.string.cancel) },
-                            ),
+                                )
+                            },
                         )
-                    },
-                )
+                    }
+                }
                 SettingItem(
                     title = stringResource(Res.string.send_back_listening_data_to_google),
                     subtitle =
@@ -1067,6 +1111,136 @@ fun SettingScreen(
                                 switch = ((crossfadeDjMode) to { viewModel.setCrossfadeDjMode(it) }),
                             )
                         }
+                    }
+                }
+            }
+        }
+        // Advertisement & Prayer Alarm Settings
+        item(key = "advertisement_prayer") {
+            Column {
+                Text(
+                    text = stringResource(Res.string.advertisement_and_prayer),
+                    style = typo().labelMedium,
+                    color = white,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                )
+                // Advertisement settings
+                SettingItem(
+                    title = stringResource(Res.string.advertisement_playback),
+                    subtitle = stringResource(Res.string.advertisement_playback_description),
+                    smallSubtitle = true,
+                    switch = (advertisementEnabled to { viewModel.setAdvertisementEnabled(it) }),
+                )
+                AnimatedVisibility(visible = advertisementEnabled) {
+                    Column {
+                        SettingItem(
+                            title = stringResource(Res.string.advertisement_interval),
+                            subtitle = "${advertisementInterval}s (${advertisementInterval / 60}m ${advertisementInterval % 60}s)",
+                            onClick = {
+                                viewModel.setAlertData(
+                                    SettingAlertState(
+                                        title = runBlocking { getString(Res.string.advertisement_interval) },
+                                        selectOne =
+                                            SettingAlertState.SelectData(
+                                                listSelect =
+                                                    listOf(
+                                                        (advertisementInterval == 30) to "30s",
+                                                        (advertisementInterval == 60) to "1m",
+                                                        (advertisementInterval == 120) to "2m",
+                                                        (advertisementInterval == 180) to "3m",
+                                                        (advertisementInterval == 240) to "4m",
+                                                        (advertisementInterval == 300) to "5m",
+                                                    ),
+                                            ),
+                                        confirm =
+                                            runBlocking { getString(Res.string.change) } to { state ->
+                                                val interval =
+                                                    when (state.selectOne?.getSelected()) {
+                                                        "30s" -> 30
+                                                        "1m" -> 60
+                                                        "2m" -> 120
+                                                        "3m" -> 180
+                                                        "4m" -> 240
+                                                        "5m" -> 300
+                                                        else -> 300
+                                                    }
+                                                viewModel.setAdvertisementInterval(interval)
+                                                viewModel.setAlertData(null)
+                                            },
+                                        dismiss = runBlocking { getString(Res.string.cancel) },
+                                    ),
+                                )
+                            },
+                        )
+                        SettingItem(
+                            title = stringResource(Res.string.upload_advertisement_track),
+                            subtitle = if (advertisementTrackPath.isNotEmpty()) {
+                                advertisementTrackPath.substringAfterLast("/")
+                            } else {
+                                stringResource(Res.string.no_track_selected)
+                            },
+                            onClick = {
+                                advertisementFilePickerLauncher.launch(arrayOf("audio/*"))
+                            },
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = white.copy(alpha = 0.1f))
+                Spacer(modifier = Modifier.height(16.dp))
+                // Prayer Alarm settings
+                SettingItem(
+                    title = stringResource(Res.string.prayer_alarm),
+                    subtitle = stringResource(Res.string.prayer_alarm_description),
+                    smallSubtitle = true,
+                    switch = (prayerAlarmEnabled to { viewModel.setPrayerAlarmEnabled(it) }),
+                )
+                AnimatedVisibility(visible = prayerAlarmEnabled) {
+                    Column {
+                        SettingItem(
+                            title = stringResource(Res.string.prayer_alarm_time),
+                            subtitle = prayerAlarmTime,
+                            onClick = {
+                                viewModel.setAlertData(
+                                    SettingAlertState(
+                                        title = runBlocking { getString(Res.string.prayer_alarm_time) },
+                                        selectOne =
+                                            SettingAlertState.SelectData(
+                                                listSelect =
+                                                    listOf(
+                                                        (prayerAlarmTime == "05:30") to "05:30",
+                                                        (prayerAlarmTime == "05:45") to "05:45",
+                                                        (prayerAlarmTime == "06:00") to "06:00",
+                                                        (prayerAlarmTime == "11:30") to "11:30",
+                                                        (prayerAlarmTime == "12:00") to "12:00",
+                                                        (prayerAlarmTime == "17:00") to "17:00",
+                                                        (prayerAlarmTime == "18:00") to "18:00",
+                                                        (prayerAlarmTime == "19:00") to "19:00",
+                                                        (prayerAlarmTime == "19:30") to "19:30",
+                                                        (prayerAlarmTime == "20:00") to "20:00",
+                                                    ),
+                                            ),
+                                        confirm =
+                                            runBlocking { getString(Res.string.change) } to { state ->
+                                                viewModel.setPrayerAlarmTime(state.selectOne?.getSelected() ?: "11:30")
+                                                viewModel.setAlertData(null)
+                                            },
+                                        dismiss = runBlocking { getString(Res.string.cancel) },
+                                    ),
+                                )
+                            },
+                        )
+                        SettingItem(
+                            title = stringResource(Res.string.prayer_audio_file),
+                            subtitle = if (prayerAlarmFilePath.isNotEmpty()) {
+                                prayerAlarmFilePath.substringAfterLast("/")
+                            } else {
+                                stringResource(Res.string.no_file_selected)
+                            },
+                            onClick = {
+                                prayerFilePickerLauncher.launch(arrayOf("audio/*"))
+                            },
+                        )
                     }
                 }
             }

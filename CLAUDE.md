@@ -472,6 +472,8 @@ if (getPlatform() == Platform.Android) {
 - **Desktop Crash dialog**: Error reporting UI for desktop
 - **Playback speed/pitch controls**: Redesigned UI with improved animations
 - **VM environment detection**: Disable transparency and custom titlebar in VMs
+- **Advertisement playback**: Play locally stored advertisement tracks at configurable fixed intervals (30-300 seconds)
+- **Prayer alarm**: Daily reminder at specified time (e.g., 11:30 AM) that interrupts current playback
 
 ## 🔄 CLAUDE.md Auto-Update Rule (MANDATORY)
 
@@ -497,6 +499,6 @@ After completing any of the following types of changes, the AI agent **MUST** up
 
 *This document helps AI Agents quickly understand the SimpMusic project. Update regularly when there are major changes to architecture or structure.*
 
-**Last updated**: 2026-03-14
+**Last updated**: 2026-05-31
 **Project version**: Check latest release on GitHub
 **Maintained by**: maxrave-dev and contributors

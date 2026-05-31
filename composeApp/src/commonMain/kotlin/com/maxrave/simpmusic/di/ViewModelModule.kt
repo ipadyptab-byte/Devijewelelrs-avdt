@@ -1,5 +1,6 @@
 package com.maxrave.simpmusic.di
 
+import com.maxrave.simpmusic.viewModel.AIRadioViewModel
 import com.maxrave.simpmusic.viewModel.AlbumViewModel
 import com.maxrave.simpmusic.viewModel.AnalyticsViewModel
 import com.maxrave.simpmusic.viewModel.ArtistViewModel
@@ -145,6 +146,11 @@ val viewModelModule =
                 get(),
                 get(),
                 get(),
+                get(),
+            )
+        }
+        viewModel {
+            AIRadioViewModel(
                 get(),
             )
         }
